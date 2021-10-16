@@ -32,7 +32,7 @@ const getUserWithEmail = function(email) {
     // console.log(user);
     return user;
   })
-  .catch(error => {
+  .catch(err => {
     console.error('NULL', err.stack);
   });
 }
@@ -60,7 +60,7 @@ const getUserWithId = function(id) {
     // console.log(user);
     return user;
   })
-  .catch(error => {
+  .catch(err => {
   console.error('NULL', err.stack);
   });
 }
@@ -88,10 +88,9 @@ const addUser =  function(user) {
   .then(res => {
     return res.rows[0];
   })
-  .catch(error => {
+  .catch(err => {
     console.error('query error', err.stack);
   });
-
 }
 exports.addUser = addUser;
 
@@ -118,7 +117,7 @@ const getAllReservations = function(guest_id, limit = 10) {
   .then(res => {
     return res.rows;
   })
-  .catch(error => {
+  .catch(err => {
     console.error('query error', err.stack);
   });
 
@@ -197,9 +196,36 @@ exports.getAllProperties = getAllProperties;
  * @return {Promise<{}>} A promise to the property.
  */
 const addProperty = function(property) {
-  const propertyId = Object.keys(properties).length + 1;
-  property.id = propertyId;
-  properties[propertyId] = property;
-  return Promise.resolve(property);
+  const ownerId = property.owner_id;
+  const title = property.title;
+  const desc = property.description;
+  const thumbPhoto = property.thumbnail_photo_url;
+  const coverPhoto = property.cover_photo_url;
+  const nightCost = property.cost_per_night;
+  const st = property.street;
+  const city = property.city;
+  const prov = property.province;
+  const pcode = property.post_code;
+  const con = property.country;
+  const parking = property.parking_spaces;
+  const bath = property.number_of_bathrooms;
+  const bed = property.number_of_bedrooms;
+
+  const queryString = `
+  INSERT INTO properties (owner_id, title, description, thumbnail_photo_url,
+    cover_photo_url, cost_per_night, street, city, province, post_code,
+    country, parking_spaces, number_of_bathrooms, number_of_bedrooms)
+  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+  RETURNING *`;
+  
+  const values = [ownerId, title, desc, thumbPhoto, coverPhoto, nightCost, st, city, prov, pcode, con, parking, bath, bed];
+
+  return pool.query(queryString, values)
+  .then(res => {
+    return res.rows[0];
+  })
+  .catch(err => {
+    console.error('query error', err.stack);
+  });
 }
 exports.addProperty = addProperty;
