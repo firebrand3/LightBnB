@@ -38,11 +38,33 @@ function getAllListings(params) {
   });
 }
 
-function getAllReservations() {
+function getFulfilledReservations() {
   let url = "/api/reservations";
   return $.ajax({
     url,
   });
+}
+
+function getUpcomingReservations() {
+  let url = "/api/reservations/upcoming";
+  return $.ajax({
+    url,
+  });
+}
+
+function getIndividualReservation(reservationId) {
+  let url = `/api/reservations/${reservationId}`
+  return $.ajax({
+    url,
+  })
+}
+
+const updateReservation = function(data) {
+  return $.ajax({
+    method: "POST",
+    url: `/api/reservations/${data.reservation_id}`,
+    data,
+  })
 }
 
 const submitProperty = function(data) {
@@ -58,5 +80,12 @@ const submitReservation = function(data) {
     method: "POST",
     url: "/api/reservations",
     data,
+  })
+}
+
+const deleteReservation = function(data) {
+  return $.ajax({
+    method: "DELETE",
+    url: `/api/reservations/${data.reservation_id}`
   })
 }
